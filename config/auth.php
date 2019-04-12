@@ -42,8 +42,16 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'passport',
             'provider' => 'users',
+        ],
+        'teacher' => [
+            'driver' => 'passport',
+            'provider' => 'teachers'
+        ],
+        'student' => [
+            'driver' => 'passport',
+            'provider' => 'students'
         ],
     ],
 
@@ -64,16 +72,29 @@ return [
     |
     */
 
+    'passport' => [
+        'guard' => '',
+    ],
+
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'teachers' => [
+            'driver' => 'eloquent',
+            'model' => App\Teacher::class,
+            'passport' => [
+                'username' => 'username',
+            ],
+        ],
+        'students' => [
+            'driver' => 'eloquent',
+            'model' => App\Student::class,
+            'passport' => [
+                'username' => 'username',
+            ],
+        ],
     ],
 
     /*

@@ -176,6 +176,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Jsdecena\LPM\LaravelPassportMultiAuthServiceProvider::class,
 
     ],
 
@@ -191,6 +192,7 @@ return [
     */
 
     'aliases' => [
+//        'Laravel\Passport\Bridge\UserRepository' => App\PassportUserRepository::class,
 
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
