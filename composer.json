@@ -7,6 +7,7 @@
     "require": {
         "php": ">=7.0.0",
         "fideloper/proxy": "~3.3",
+        "firebase/php-jwt": "^5.0",
         "jsdecena/laravel-passport-multiauth": "^0.2.4",
         "laravel/framework": "5.5.*",
         "laravel/passport": "~4.0",
