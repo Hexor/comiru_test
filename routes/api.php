@@ -1,9 +1,13 @@
 <?php
 
+use App\Teacher;
+use Carbon\Carbon;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Laravel\Passport\Bridge\PersonalAccessGrant;
+use League\OAuth2\Server\AuthorizationServer;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:teacher')->get('/teacher', function (Request $request) {
-    Auth::guard('teacher')->user()->token()->revoke();
+//    Auth::guard('teacher')->user()->token()->revoke();
 
     return $request->user();
 });
@@ -26,6 +30,19 @@ Route::middleware('auth:student')->get('/student', function (Request $request) {
 //    Auth::guard('student')->user()->token()->revoke();
 
     return $request->user();
+});
+
+Route::get('st', function (Request $request) {
+    $teacher = Teacher::find(1);
+    app()->get(AuthorizationServer::class)->enableGrantType(new PersonalAccessGrant(), new DateInterval('PT59S'));
+
+    $token = $teacher->createToken('My Token');
+    return $token;
+//    $tokens = $teacher->tokens();
+//    foreach ($tokens as $token) {
+//        $token->revoke();
+//    }
+    return $teacher->tokens();
 });
 
 Route::post('login', function (Request $request) {

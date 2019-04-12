@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use DateInterval;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Bridge\PersonalAccessGrant;
+use League\OAuth2\Server\AuthorizationServer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
+
     }
 
     /**

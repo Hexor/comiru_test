@@ -8,7 +8,7 @@ use Laravel\Passport\HasApiTokens;
 
 class Student extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasMultiAuthApiTokens, Notifiable;
 
     protected $fillable = [
         'name', 'username', 'password',
