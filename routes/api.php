@@ -34,7 +34,6 @@ Route::middleware('auth:student')->get('/student', function (Request $request) {
 
 Route::get('st', function (Request $request) {
     $teacher = Teacher::find(1);
-    app()->get(AuthorizationServer::class)->enableGrantType(new PersonalAccessGrant(), new DateInterval('PT59S'));
 
     $token = $teacher->createToken('My Token');
     return $token;
