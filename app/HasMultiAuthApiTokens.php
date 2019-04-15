@@ -51,7 +51,7 @@ trait HasMultiAuthApiTokens
 
         // Change config to when the token is created set the provider from model creating the token.
         config(['auth.guards.api.provider' => $userProvider]);
-        app()->get(AuthorizationServer::class)->enableGrantType(new PersonalAccessGrant(), new DateInterval('PT59S'));
+        app()->get(AuthorizationServer::class)->enableGrantType(new PersonalAccessGrant(), new DateInterval('PT'.env('TOKEN_EXPIRE_SECONDS').'S'));
 
         $token = Container::getInstance()->make(PersonalAccessTokenFactory::class)->make(
             $this->getKey(), $name, $scopes

@@ -32,7 +32,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::routes();
 //        Passport::tokensExpireIn(Carbon::now()->addDays(15));
-        Passport::tokensExpireIn(Carbon::now()->addSeconds(20));
+        Passport::tokensExpireIn(Carbon::now()->addSeconds(env('TOKEN_EXPIRE_SECONDS')));
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
         Route::group(['middleware' => 'oauth.providers'], function () {
             Passport::routes(function ($router) {

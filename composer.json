@@ -6,11 +6,13 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
+        "barryvdh/laravel-cors": "v0.11.0",
         "fideloper/proxy": "~3.3",
         "firebase/php-jwt": "^5.0",
         "laravel/framework": "5.5.*",
         "laravel/passport": "~4.0",
         "laravel/tinker": "~1.0",
+        "overtrue/laravel-lang": "~3.0",
         "smartins/passport-multiauth": "v3.0.0"
     },
     "require-dev": {

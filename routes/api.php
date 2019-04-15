@@ -44,25 +44,39 @@ Route::get('st', function (Request $request) {
     return $teacher->tokens();
 });
 
-Route::post('login', function (Request $request) {
+Route::group([
+    'prefix' => 'auth'
+], function () {
+//    Route::post('login', 'AuthController@login');
+    Route::post('signup', 'AuthController@signup');
 
-    // Fire off the internal request.
+//    Route::group([
+//        'middleware' => 'auth:api'
+//    ], function() {
+//        Route::get('logout', 'AuthController@logout');
+//        Route::get('user', 'AuthController@user');
+//    });
 
-    $proxy = Request::create('/oauth/token', 'POST', [
-        'username' => $request->username,
-        'password' => $request->password,
-        'grant_type' => 'password',
-        'client_id' => 2,
-        'provider' => $request->provider,
-        'client_secret' => 'NysNLZOqvScGz8UaVdTibcTamTPzsorEhfki5kRx',
-        'scope' => '*'
-    ]);
+    Route::post('signin', function (Request $request) {
+
+        // Fire off the internal request.
+
+        $proxy = Request::create('/oauth/token', 'POST', [
+            'username' => $request->username,
+            'password' => $request->password,
+            'grant_type' => 'password',
+            'client_id' => 2,
+            'provider' => $request->provider,
+            'client_secret' => 'NoEtJmKV5sUUScA5AosfTjiu050vNBpZJNn4PPNc',
+            'scope' => '*'
+        ]);
 
 
-    return app()->handle($proxy);
+        return app()->handle($proxy);
+
+    });
 
 });
-
 
 //http://127.0.0.1/api/line_auth_callback?code=BGXbp6CUwV2ipygGz6UW&state=12345abcde
 
@@ -90,9 +104,9 @@ Route::any('line_auth_callback', function (Request $request) {
 
 
 // line 返回的加密后的用户信息
-//  "access_token" => "eyJhb▶"
+//  "access_token" => "eyJhb......"
 //  "token_type" => "Bearer"
-//  "refresh_token" => "GR87P4JaLfKqJcXSMgID"
+//  "refresh_token" => "GR87P4JaLfKqJcXSMgID...."
 //  "expires_in" => 2592000
 //  "scope" => "openid"
 //  "id_token" => "eyJ0eXAiOiJKcyCI"

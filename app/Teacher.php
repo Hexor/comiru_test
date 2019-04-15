@@ -10,10 +10,7 @@ class Teacher extends Authenticatable
 {
     use HasMultiAuthApiTokens, Notifiable;
 
-
-    protected $fillable = [
-        'name', 'username', 'password',
-    ];
+    protected $guarded = [];
 
     protected $hidden = [
         'password', 'remember_token',
