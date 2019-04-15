@@ -4,14 +4,74 @@ namespace App\Http\Controllers;
 
 use App\Student;
 use App\Teacher;
+use Firebase\JWT\JWT;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class AuthController extends Controller
 {
-    private static $CLIENT_ID = 2;
-    private static $CLIENT_SECRET = 'NoEtJmKV5sUUScA5AosfTjiu050vNBpZJNn4PPNc';
+    public function bindLine(Request $request)
+    {
+        $tokenProvider = $request->token_provider;
+        $decoded = JWT::decode($request->line_token, env('LINE_CLIENT_SECRET'), ['HS256']);
+
+        // TODO 开始绑定逻辑
+        $lineUser = new LineUserRepository();
+        $lineUser->create($decoded, $tokenProvider, $request->user());
+    }
+
+    /**
+     * 处理由 Line 服务器上发来的请求
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|string
+     */
+    public function lineAuthCallback(Request $request)
+    {
+        if ($request->state != '12345') {
+            return 'error 1';
+        }
+
+        $http = new Client();
+        $jwt = $http->post('https://api.line.me/oauth2/v2.1/token', [
+            'form_params' => [
+                'grant_type' => 'authorization_code',
+                'client_id' => env('LINE_CLIENT_ID'),
+                'client_secret' => env('LINE_CLIENT_SECRET'),
+                'redirect_uri' => 'http://127.0.0.1:8000/api/line_auth_callback',
+                'code' => $request->code,
+            ],
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ]
+        ]);
+
+
+// line 返回的加密后的用户信息
+//  "access_token" => "eyJhb......"
+//  "token_type" => "Bearer"
+//  "refresh_token" => "GR87P4JaLfKqJcXSMgID...."
+//  "expires_in" => 2592000
+//  "scope" => "openid"
+//  "id_token" => "eyJ0eXAiOiJKcyCI"
+
+        $encodedDataFromLineServer = json_decode($jwt->getBody()->getContents(), true);
+//        dd($encodedDataFromLineServer);
+
+        $accessToken = $encodedDataFromLineServer['id_token'];
+        $expiresIn = $encodedDataFromLineServer['expires_in'];
+//        return redirect("http://localhost:8080/#/auth/line?access_token={$accessToken}&expires_in={$expiresIn}");
+
+
+        $decoded = JWT::decode($encodedDataFromLineServer['id_token'], env('LINE_CLIENT_SECRET'), ['HS256']);
+//   解密 id_token 后得到用户的 line信息
+//    +"iss": "https://access.line.me"  make sure
+//    +"sub": "U57f93ee27d38ec9077cedb50059ef4c2" User ID for which the ID token is generated
+//    +"aud": "1564192144" make sure it is your channel id
+//    +"exp": 1555057940 make sure current time is not larger than exp (1小时过期)
+//    +"iat": 1555054340 Time when the ID token was generated in UNIX time.
+        // TODO 创建一条记录在 Line_user 表里
+        dd($decoded);
+    }
 
     public function signin(Request $request)
     {
@@ -33,8 +93,8 @@ class AuthController extends Controller
             'password' => $request->password,
             'grant_type' => 'password',
             'provider' => $this->getTokenProvider($request),
-            'client_id' => $this::$CLIENT_ID,
-            'client_secret' => $this::$CLIENT_SECRET,
+            'client_id' => env('PASSPORT_CLIENT_ID'),
+            'client_secret' => env('PASSPORT_CLIENT_SECRET'),
             'scope' => '*'
         ]);
         return app()->handle($proxy);
@@ -87,50 +147,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Login user and create token
-     *
-     * @param  [string] email
-     * @param  [string] password
-     * @param  [boolean] remember_me
-     * @return [string] access_token
-     * @return [string] token_type
-     * @return [string] expires_at
-     */
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
-        ]);
-
-        $credentials = request(['email', 'password']);
-
-        if (!Auth::attempt($credentials))
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
-
-        $user = $request->user();
-
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->token;
-
-        if ($request->remember_me)
-            $token->expires_at = Carbon::now()->addWeeks(1);
-
-        $token->save();
-
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
-                $tokenResult->token->expires_at
-            )->toDateTimeString()
-        ]);
-    }
-
-    /**
      * Logout user (Revoke the token)
      *
      * @return [string] message
@@ -144,22 +160,12 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Get the authenticated User
-     *
-     * @return [json] user object
-     */
-    public function user(Request $request)
-    {
-        return response()->json($request->user());
-    }
-
     private function getTokenProvider($request)
     {
         $tokenProvider = "";
         if ($request->signup_type === 'teacher') {
             $tokenProvider = 'teachers';
-        } elseif ($request->signup_type === 'student'){
+        } elseif ($request->signup_type === 'student') {
             $tokenProvider = 'students';
         }
 

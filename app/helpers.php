@@ -4,17 +4,6 @@ use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Validation\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-if (!function_exists('request')) {
-
-    /**
-     * @return Illuminate\Http\Request
-     */
-    function request()
-    {
-        return app('Illuminate\Http\Request');
-    }
-}
-
 if (!function_exists('inputAll')) {
     /**
      * @return array
