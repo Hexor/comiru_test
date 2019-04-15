@@ -23,7 +23,7 @@ use League\OAuth2\Server\AuthorizationServer;
 Route::middleware('auth:teacher')->get('/teacher', function (Request $request) {
 //    Auth::guard('teacher')->user()->token()->revoke();
 
-    return $request->user();
+    return responseSuccess($request->user());
 });
 
 Route::middleware('auth:student')->get('/student', function (Request $request) {
@@ -47,35 +47,8 @@ Route::get('st', function (Request $request) {
 Route::group([
     'prefix' => 'auth'
 ], function () {
-//    Route::post('login', 'AuthController@login');
     Route::post('signup', 'AuthController@signup');
-
-//    Route::group([
-//        'middleware' => 'auth:api'
-//    ], function() {
-//        Route::get('logout', 'AuthController@logout');
-//        Route::get('user', 'AuthController@user');
-//    });
-
-    Route::post('signin', function (Request $request) {
-
-        // Fire off the internal request.
-
-        $proxy = Request::create('/oauth/token', 'POST', [
-            'username' => $request->username,
-            'password' => $request->password,
-            'grant_type' => 'password',
-            'client_id' => 2,
-            'provider' => $request->provider,
-            'client_secret' => 'NoEtJmKV5sUUScA5AosfTjiu050vNBpZJNn4PPNc',
-            'scope' => '*'
-        ]);
-
-
-        return app()->handle($proxy);
-
-    });
-
+    Route::post('signin', 'AuthController@signin');
 });
 
 //http://127.0.0.1/api/line_auth_callback?code=BGXbp6CUwV2ipygGz6UW&state=12345abcde

@@ -10,6 +10,36 @@ use Carbon\Carbon;
 
 class AuthController extends Controller
 {
+    private static $CLIENT_ID = 2;
+    private static $CLIENT_SECRET = 'NoEtJmKV5sUUScA5AosfTjiu050vNBpZJNn4PPNc';
+
+    public function signin(Request $request)
+    {
+        $this->validate($request, [
+            'username' => 'required|max:10',
+            'password' => 'required|min:6|max:20',
+            'signup_type' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($value != 'teacher' && $value != 'student') {
+                        return $fail('必须选择要注册的用户类型');
+                    }
+                },
+            ]
+        ]);
+
+        $proxy = Request::create('/oauth/token', 'POST', [
+            'username' => $request->username,
+            'password' => $request->password,
+            'grant_type' => 'password',
+            'provider' => $this->getTokenProvider($request),
+            'client_id' => $this::$CLIENT_ID,
+            'client_secret' => $this::$CLIENT_SECRET,
+            'scope' => '*'
+        ]);
+        return app()->handle($proxy);
+    }
+
     public function signup(Request $request)
     {
         $this->validate($request, [
@@ -39,10 +69,8 @@ class AuthController extends Controller
         ];
         if ($request->signup_type === 'teacher') {
             $user = new Teacher($userInfo);
-            $tokenProvider = 'teachers';
         } else {
             $user = new Student($userInfo);
-            $tokenProvider = 'students';
         }
 
         $saved = $user->save();
@@ -52,7 +80,7 @@ class AuthController extends Controller
         $proxy = Request::create('/api/auth/signin', 'POST', [
             'username' => $request->username,
             'password' => $request->password,
-            'provider' => $tokenProvider
+            'provider' => $this->getTokenProvider($request)
         ]);
 
         return app()->handle($proxy);
@@ -124,5 +152,18 @@ class AuthController extends Controller
     public function user(Request $request)
     {
         return response()->json($request->user());
+    }
+
+    private function getTokenProvider($request)
+    {
+        $tokenProvider = "";
+        if ($request->signup_type === 'teacher') {
+            $tokenProvider = 'teachers';
+        } elseif ($request->signup_type === 'student'){
+            $tokenProvider = 'students';
+        }
+
+        return $tokenProvider;
+
     }
 }
