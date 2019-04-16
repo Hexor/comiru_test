@@ -48,6 +48,11 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof ApiException) {
+            return responseError($exception->getMessage(), $exception->getCode());
+        } elseif ($exception->getCode() >= 400 && $exception->getCode() < 500) {
+            return responseError($exception->getMessage(), $exception->getCode());
+        }
         return parent::render($request, $exception);
     }
 }

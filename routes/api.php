@@ -20,7 +20,7 @@ Route::group([
     'prefix' => 'line',
     'middleware' => ['line-auth']
 ], function () {
-    Route::get('line/line_users', 'LineUserController@index')->name('get_line_users_from_line_auth');
+    Route::get('line_users', 'LineUserController@index')->name('get_line_users_from_line_auth');
 });
 
 $StudentTeacherCommonRoutes = function ($tokenProvider) {

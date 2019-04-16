@@ -15,8 +15,19 @@ class Student extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    protected $appends = ['type_desc'];
+
+    public function getTypeDescAttribute()
+    {
+        return '学生';
+    }
 
     public function findForPassport($username) {
         return $this->where('username', $username)->first();
+    }
+
+    public function setAppends()
+    {
+        
     }
 }

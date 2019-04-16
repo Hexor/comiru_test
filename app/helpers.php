@@ -108,6 +108,12 @@ if (!function_exists('responseUnprocessable')) {
     }
 }
 
+if (!function_exists('throwSaveFailedException')) {
+    function throwSaveFailedException($message)
+    {
+        throw new Exception($message, Response::HTTP_INSUFFICIENT_STORAGE);
+    }
+}
 if (!function_exists('responseError')) {
     function responseError($errors = 'Error', $code = 200, $data = '')
     {

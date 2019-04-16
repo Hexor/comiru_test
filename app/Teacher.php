@@ -15,8 +15,15 @@ class Teacher extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    protected $appends = ['type_desc'];
 
-    public function findForPassport($username) {
+    public function getTypeDescAttribute()
+    {
+        return '教师';
+    }
+
+    public function findForPassport($username)
+    {
         return $this->where('username', $username)->first();
     }
 }

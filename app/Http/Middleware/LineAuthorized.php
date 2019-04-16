@@ -19,12 +19,12 @@ class LineAuthorized
     {
         try {
             $decoded = JWT::decode($request->line_token, env('LINE_CLIENT_SECRET'), ['HS256']);
-            if ($decoded['exp'] <= time()) {
+            if ($decoded->exp <= time()) {
                 throw new Exception("expired", 401);
             }
         } catch (\Exception $e) {
-            throw new Exception('Line 授权已经失效, 请重试', 401);
+            return responseUnauthorized('Line 授权已经失效, 请重试');
         }
-        $next();
+        return $next($request);
     }
 }

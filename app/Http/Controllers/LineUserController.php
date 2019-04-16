@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\LineUser;
+use App\Repositories\LineUserRepository;
+use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 class LineUserController extends Controller
 {
@@ -12,9 +15,14 @@ class LineUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, LineUserRepository $lineUserRepository)
     {
-        //
+        if (Route::currentRouteName() == 'get_line_users_from_line_auth') {
+            $decoded = JWT::decode($request->line_token, env('LINE_CLIENT_SECRET'), ['HS256']);
+            return $lineUserRepository->indexByLineID($decoded->sub);
+        }
+
+        return $lineUserRepository->index();
     }
 
     /**
