@@ -102,6 +102,7 @@ class AuthController extends Controller
             ]
         ]);
 
+        $signType = $request->sign_type;
         $proxy = Request::create('/oauth/token', 'POST', [
             'username' => $request->username,
             'password' => $request->password,
@@ -118,7 +119,7 @@ class AuthController extends Controller
         }
 
         // 登录成功后, 检测该用户是否绑定过line, 并将状态传回客户端
-        if ($lineUserRepository->isUserBindLine($request->username)) {
+        if ($lineUserRepository->isUserBindLine($request->username, $signType)) {
             $responseArray = json_decode($response->getContent(), true);
             $responseArray['line_exist_in_server'] = 'line_exist_in_server';
             $response->setContent(
@@ -175,7 +176,7 @@ class AuthController extends Controller
         $proxy = Request::create('/api/auth/signin', 'POST', [
             'username' => $request->username,
             'password' => $request->password,
-            'provider' => getTokenProvider($request)
+            'sign_type' => $request->sign_type
         ]);
 
         return app()->handle($proxy);

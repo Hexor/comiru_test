@@ -15,19 +15,20 @@ class Student extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-    protected $appends = ['type_desc'];
+    protected $appends = ['type_desc', 'sign_type'];
 
     public function getTypeDescAttribute()
     {
         return '学生';
     }
 
+    public function getSignTypeAttribute()
+    {
+        return 'student';
+    }
+
     public function findForPassport($username) {
         return $this->where('username', $username)->first();
     }
 
-    public function setAppends()
-    {
-        
-    }
 }

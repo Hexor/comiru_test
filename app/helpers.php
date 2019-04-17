@@ -126,11 +126,7 @@ if (!function_exists('responseError')) {
 if (!function_exists('responseSuccess')) {
     function responseSuccess($data = '')
     {
-        return response()->json([
-            'code' => 200,
-            'message' => '',
-            'data' => $data,
-        ]);
+        return response()->json($data);
     }
 }
 

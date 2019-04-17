@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Teacher;
 use Illuminate\Http\Request;
 
-class TeacherController extends Controller
+class TeacherController extends UserController
 {
-    use UserTrait;
     /**
      * Display a listing of the resource.
      *

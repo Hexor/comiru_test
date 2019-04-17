@@ -22,6 +22,7 @@ Route::group([
 ], function () {
     Route::get('line_users', 'LineUserController@index')->name('get_line_users_from_line_auth');
     Route::post('bind_user', 'LineUserController@bindUser');
+    Route::post('switch_user', 'LineUserController@switchUser');
 });
 
 $StudentTeacherCommonRoutes = function ($tokenProvider, $controllerName) {
@@ -32,6 +33,7 @@ $StudentTeacherCommonRoutes = function ($tokenProvider, $controllerName) {
     Route::get('line_users', 'LineUserController@index');
     Route::post('bind_line', $controllerName . '@bindLine')->middleware('line-auth');
     Route::post('bind_user', $controllerName . '@bindUser');
+    Route::post('switch_user', $controllerName . '@switchUser');
 };
 
 

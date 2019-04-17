@@ -15,11 +15,16 @@ class Teacher extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-    protected $appends = ['type_desc'];
+    protected $appends = ['type_desc', 'sign_type'];
 
     public function getTypeDescAttribute()
     {
         return '教师';
+    }
+
+    public function getSignTypeAttribute()
+    {
+        return 'teacher';
     }
 
     public function findForPassport($username)

@@ -27,8 +27,8 @@ class LineUserRepository
         if ($tokenProvider === 'teachers') {
             $this->makeSureOnlyOneTeacherCanBindLine($user->id, $lineID);
             $data['teacher_id'] = $user->id;
-        } elseif ($tokenProvider === 'users') {
-            $data['user_id'] = $user->id;
+        } elseif ($tokenProvider === 'students') {
+            $data['student_id'] = $user->id;
         }
 
 
@@ -77,11 +77,12 @@ class LineUserRepository
         $students = LineUser::where('id', $id)->whereNotNull('student_id')->with('student')->get();
 
         $result = [];
-        foreach ($students as $student) {
-            $result[] = $student;
-        }
         if ($teacher) {
             $result[] = $teacher;
+        }
+
+        foreach ($students as $student) {
+            $result[] = $student;
         }
 
         return $result;
@@ -91,12 +92,11 @@ class LineUserRepository
     {
         $request = request();
         $user = $request->user();
-        $request->token_provider;
 
         $queryColomn = '';
-        if ($request->token_provider === 'teachers') {
+        if ($user->sign_type === 'teacher') {
             $queryColomn = 'teacher_id';
-        } elseif ($request->token_provider === 'students') {
+        } elseif ($user->sign_type === 'student') {
             $queryColomn = 'student_id';
         }
 
@@ -109,19 +109,20 @@ class LineUserRepository
 
     }
 
-    public function isUserBindLine($username)
+    public function isUserBindLine($username, $signType)
     {
+        $lineUser = null;
         try {
-            if (request()->sign_type === 'teacher') {
+            if ($signType === 'teacher') {
                 $teacher = Teacher::where('username', $username)->firstOrFail();
                 $lineUser = LineUser::where('teacher_id', $teacher->id)->firstOrFail();
                 $lineUser->user = $teacher;
-            } elseif (request()->sign_type === 'student') {
+            } elseif ($signType === 'student') {
                 $student = Student::where('username', $username)->firstOrFail();
                 $lineUser = LineUser::where('student_id', $student->id)->firstOrFail();
                 $lineUser->user = $student;
             }
-        } catch (Exception $e) {
+        } catch (Exception $e) {;
             return;
         }
 
@@ -136,6 +137,16 @@ class LineUserRepository
                 throw new Exception('一个Line 帐号只能绑定一个教师帐号, 绑定失败', Response::HTTP_CONFLICT);
             }
         }
+    }
+
+    public function findByUser($user)
+    {
+        return LineUser::where($user->sign_type . '_id', $user->id)->first();
+    }
+
+    public function findByID($lineID)
+    {
+        return LineUser::where('id', $lineID)->first();
     }
 
 }

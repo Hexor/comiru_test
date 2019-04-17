@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\traits\commonAuthTrait;
 use App\LineUser;
 use App\Repositories\LineUserRepository;
+use App\Repositories\UserRepository;
+use Exception;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -11,34 +14,40 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LineUserController extends Controller
 {
-    public function bindUser(Request $request, LineUserRepository $lineUserRepository)
-    {
-        if ($request->is_signup) {
-            $exist = LineUser::where('id', $request->line_id)->whereNotNull('teacher_id')->first();
-            if ($exist) {
-                throw new Exception('一个Line 帐号只能绑定一个教师帐号, 注册失败', Response::HTTP_CONFLICT);
-            }
-            $proxy = Request::create('/api/auth/signup', 'POST', $request->all());
-        } else {
-            $proxy = Request::create('/api/auth/signin', 'POST', $request->all());
-        }
+    use commonAuthTrait;
 
-        $response = app()->handle($proxy);
+    public function switchUser(Request $request, LineUserRepository $lineUserRepository, UserRepository $userRepository)
+    {
+        $lineUser = $lineUserRepository->findByID($request->line_id);
+        return $this->commonSwitchUser($request, $lineUserRepository, $userRepository, $lineUser);
+    }
+
+    public function bindUser(Request $request, LineUserRepository $lineUserRepository, UserRepository $userRepository)
+    {
+        $signType = $request->sign_type;
+        $lineID = $request->line_id;
+        $tokenProvider = getTokenProvider($request);
+
+        $response = $this->verifyAuthInfoBeforeBind($request, $lineID, $signType);
         if (!$response->isOk()) {
             return $response;
         }
 
-        $target = $lineUserRepository->isUserBindLine($request->username);
+        $target = $lineUserRepository->isUserBindLine($request->username, $signType);
         if ($target) {
-            if ($target->id != $request->line_id) {
+            if ($target->id != $lineID) {
                 throw new Exception('该帐号已经绑定的 Line 帐号不属于你, 绑定新帐号失败');
             }
         }
 
-        $lineUserRepository->create($request->line_id, getTokenProvider($request), $target->user);
-
+        $lineUserRepository->create(
+            $lineID,
+            $tokenProvider,
+            $userRepository->getUserByUsername($request->username, $signType)
+        );
         return responseSuccess();
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -67,7 +76,7 @@ class LineUserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -78,7 +87,7 @@ class LineUserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\LineUser  $lineUser
+     * @param  \App\LineUser $lineUser
      * @return \Illuminate\Http\Response
      */
     public function show(LineUser $lineUser)
@@ -89,7 +98,7 @@ class LineUserController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\LineUser  $lineUser
+     * @param  \App\LineUser $lineUser
      * @return \Illuminate\Http\Response
      */
     public function edit(LineUser $lineUser)
@@ -100,8 +109,8 @@ class LineUserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\LineUser  $lineUser
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\LineUser $lineUser
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, LineUser $lineUser)
@@ -112,7 +121,7 @@ class LineUserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\LineUser  $lineUser
+     * @param  \App\LineUser $lineUser
      * @return \Illuminate\Http\Response
      */
     public function destroy(LineUser $lineUser)
