@@ -72,7 +72,7 @@ class AuthController extends Controller
         $accessToken = $encodedDataFromLineServer['id_token'];
         $expiresIn = $encodedDataFromLineServer['expires_in'];
 
-        return redirect("http://localhost:8080/#/auth/line?access_token={$accessToken}&expires_in={$expiresIn}");
+        return redirect(env('APP_URL') . "/#/auth/line?access_token={$accessToken}&expires_in={$expiresIn}");
 
         $decoded = JWT::decode($encodedDataFromLineServer['id_token'], env('LINE_CLIENT_SECRET'), ['HS256']);
 //   解密 id_token 后得到用户的 line信息
