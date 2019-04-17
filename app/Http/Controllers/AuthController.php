@@ -39,7 +39,7 @@ class AuthController extends Controller
                 'grant_type' => 'authorization_code',
                 'client_id' => env('LINE_CLIENT_ID'),
                 'client_secret' => env('LINE_CLIENT_SECRET'),
-                'redirect_uri' => 'http://comiru.tt/api/line_auth_callback',
+                'redirect_uri' => env('APP_URL') . '/api/line_auth_callback',
                 'code' => $request->code,
             ],
             'headers' => [
