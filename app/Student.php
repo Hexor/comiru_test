@@ -19,7 +19,7 @@ class Student extends Authenticatable
 
     public function getTypeDescAttribute()
     {
-        return '学生';
+        return '学员';
     }
 
     public function getSignTypeAttribute()
