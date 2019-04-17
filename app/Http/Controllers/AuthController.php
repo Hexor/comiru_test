@@ -17,6 +17,11 @@ class AuthController extends Controller
 {
 
 
+    public function push()
+    {
+
+    }
+
     /**
      * 处理由 Line 服务器上发来的请求
      * @param Request $request
@@ -44,10 +49,10 @@ class AuthController extends Controller
 
         // 开发环境 Line API 服务器被墙, 使用代理
         if (env('APP_URL') == 'http://comiru.tt') {
-           $postContent['curl'] = [
-               CURLOPT_PROXY => '127.0.0.1:12333',
-               CURLOPT_SSL_VERIFYPEER => false,
-           ];
+            $postContent['curl'] = [
+                CURLOPT_PROXY => '127.0.0.1:12333',
+                CURLOPT_SSL_VERIFYPEER => false,
+            ];
         }
 
         $jwt = $http->post('https://api.line.me/oauth2/v2.1/token', $postContent);

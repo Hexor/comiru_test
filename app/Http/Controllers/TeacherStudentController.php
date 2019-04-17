@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\TeacherStudentRepository;
 use App\TeacherStudent;
 use Illuminate\Http\Request;
 
 class TeacherStudentController extends Controller
 {
+
+    public function handleFollow(Request $request, TeacherStudentRepository $teacherStudentRepository)
+    {
+        return $teacherStudentRepository->switchFollowStatus($request->teacher_id, $request->user());
+    }
     /**
      * Display a listing of the resource.
      *

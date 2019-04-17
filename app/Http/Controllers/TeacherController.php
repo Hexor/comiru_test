@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\TeacherRepository;
 use App\Teacher;
+use App\TeacherStudent;
 use Illuminate\Http\Request;
 
 class TeacherController extends UserController
@@ -12,9 +14,9 @@ class TeacherController extends UserController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, TeacherRepository $teacherRepository)
     {
-        //
+        return $teacherRepository->index($request->user()->id);
     }
 
     /**

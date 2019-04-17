@@ -16,6 +16,9 @@ Route::get('st', function (Request $request) {
     return $teacher->tokens();
 });
 
+Route::get('teachers', 'TeacherController@index')->middleware('auth:student');
+Route::get('students', 'StudentController@index')->middleware('auth:teacher');
+
 Route::group([
     'prefix' => 'line',
     'middleware' => ['line-auth']
@@ -42,6 +45,7 @@ Route::group([
     'middleware' => ['auth:student']
 ], function () use ($StudentTeacherCommonRoutes) {
     $StudentTeacherCommonRoutes('students', 'StudentController');
+    Route::post('follow_teacher', 'TeacherStudentController@handleFollow');
 });
 
 
@@ -50,6 +54,7 @@ Route::group([
     'middleware' => ['auth:teacher']
 ], function () use ($StudentTeacherCommonRoutes) {
     $StudentTeacherCommonRoutes('teachers', 'TeacherController');
+    Route::get('fav_students', 'StudentController@favIndex');
 });
 
 
@@ -61,6 +66,7 @@ Route::group([
 });
 
 
+Route::get('push', 'AuthController@push');
 Route::any('line_auth_callback', 'AuthController@lineAuthCallback');
 //http://127.0.0.1/api/line_auth_callback?code=BGXbp6CUwV2ipygGz6UW&state=12345abcde
 

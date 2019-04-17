@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\StudentRepository;
 use App\Student;
 use Illuminate\Http\Request;
 
@@ -12,11 +13,10 @@ class StudentController extends UserController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, StudentRepository $studentRepository)
     {
-        //
+        return $studentRepository->index($request->user()->id);
     }
-
     /**
      * Show the form for creating a new resource.
      *

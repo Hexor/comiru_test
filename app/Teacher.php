@@ -31,4 +31,8 @@ class Teacher extends Authenticatable
     {
         return $this->where('username', $username)->first();
     }
+
+    public function followed() {
+        return $this->hasMany(TeacherStudent::class)->where('student_id', request()->user()->id);
+    }
 }
