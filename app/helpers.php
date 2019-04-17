@@ -118,7 +118,7 @@ if (!function_exists('responseError')) {
     function responseError($errors = 'Error', $code = 200, $data = '')
     {
         return response()->json([
-            'errors' => $errors,
+            'message' => $errors,
         ], $code);
     }
 }
@@ -134,6 +134,20 @@ if (!function_exists('responseSuccess')) {
     }
 }
 
+if (!function_exists('getTokenProvider')) {
+    function getTokenProvider($request)
+    {
+        $tokenProvider = "";
+        if ($request->sign_type === 'teacher') {
+            $tokenProvider = 'teachers';
+        } elseif ($request->sign_type === 'student') {
+            $tokenProvider = 'students';
+        }
+
+        return $tokenProvider;
+
+    }
+}
 if (!function_exists('is_int_type')) {
     function isIntType($value)
     {

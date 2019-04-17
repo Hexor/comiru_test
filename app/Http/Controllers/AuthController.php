@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\LineUser;
 use App\Repositories\LineUserRepository;
 use App\Student;
 use App\Teacher;
+use App\User;
 use Exception;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
@@ -13,14 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
-    public function bindLine(Request $request, LineUserRepository $lineUserRepository)
-    {
-        $decoded = JWT::decode($request->line_token, env('LINE_CLIENT_SECRET'), ['HS256']);
 
-        $lineUserRepository->create($decoded->sub, $request->token_provider, $request->user());
-
-        return responseSuccess();
-    }
 
     /**
      * 处理由 Line 服务器上发来的请求
@@ -85,12 +80,19 @@ class AuthController extends Controller
         dd($decoded);
     }
 
+    /**
+     * 用户使用帐号密码登录
+     * @param Request $request
+     * @param LineUserRepository $lineUserRepository
+     * @return \Illuminate\Http\JsonResponse|Response
+     * @throws Exception
+     */
     public function signin(Request $request, LineUserRepository $lineUserRepository)
     {
         $this->validate($request, [
             'username' => 'required|max:10',
             'password' => 'required|min:6|max:20',
-            'signup_type' => [
+            'sign_type' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value != 'teacher' && $value != 'student') {
@@ -104,16 +106,19 @@ class AuthController extends Controller
             'username' => $request->username,
             'password' => $request->password,
             'grant_type' => 'password',
-            'provider' => $this->getTokenProvider($request),
+            'provider' => getTokenProvider($request),
             'client_id' => env('PASSPORT_CLIENT_ID'),
             'client_secret' => env('PASSPORT_CLIENT_SECRET'),
             'scope' => '*'
         ]);
 
         $response = app()->handle($proxy);
+        if (!$response->isOk()) {
+            return responseUnauthorized('帐号或密码错误, 登录失败');
+        }
 
         // 登录成功后, 检测该用户是否绑定过line, 并将状态传回客户端
-        if ($response->isOk() && true === $lineUserRepository->isUserBindLine($request->username)) {
+        if ($lineUserRepository->isUserBindLine($request->username)) {
             $responseArray = json_decode($response->getContent(), true);
             $responseArray['line_exist_in_server'] = 'line_exist_in_server';
             $response->setContent(
@@ -124,13 +129,19 @@ class AuthController extends Controller
 
     }
 
+    /**
+     * 用户使用帐号密码注册
+     * @param Request $request
+     * @return Response
+     * @throws Exception
+     */
     public function signup(Request $request)
     {
         $this->validate($request, [
             'username' => 'required|max:10',
             'password' => 'required|min:6|max:20',
             'nickname' => 'required|max:20',
-            'signup_type' => [
+            'sign_type' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value != 'teacher' && $value != 'student') {
@@ -151,7 +162,7 @@ class AuthController extends Controller
             'username' => $request->username,
             'password' => bcrypt($request->password),
         ];
-        if ($request->signup_type === 'teacher') {
+        if ($request->sign_type === 'teacher') {
             $user = new Teacher($userInfo);
         } else {
             $user = new Student($userInfo);
@@ -164,7 +175,7 @@ class AuthController extends Controller
         $proxy = Request::create('/api/auth/signin', 'POST', [
             'username' => $request->username,
             'password' => $request->password,
-            'provider' => $this->getTokenProvider($request)
+            'provider' => getTokenProvider($request)
         ]);
 
         return app()->handle($proxy);
@@ -182,18 +193,5 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Successfully logged out'
         ]);
-    }
-
-    private function getTokenProvider($request)
-    {
-        $tokenProvider = "";
-        if ($request->signup_type === 'teacher') {
-            $tokenProvider = 'teachers';
-        } elseif ($request->signup_type === 'student') {
-            $tokenProvider = 'students';
-        }
-
-        return $tokenProvider;
-
     }
 }

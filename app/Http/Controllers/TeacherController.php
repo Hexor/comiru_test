@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
+    use UserTrait;
     /**
      * Display a listing of the resource.
      *

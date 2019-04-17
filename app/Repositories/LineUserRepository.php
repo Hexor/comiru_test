@@ -25,6 +25,7 @@ class LineUserRepository
             'id' => $lineID,
         ];
         if ($tokenProvider === 'teachers') {
+            $this->makeSureOnlyOneTeacherCanBindLine($user->id, $lineID);
             $data['teacher_id'] = $user->id;
         } elseif ($tokenProvider === 'users') {
             $data['user_id'] = $user->id;
@@ -111,20 +112,30 @@ class LineUserRepository
     public function isUserBindLine($username)
     {
         try {
-            if (request()->signup_type === 'teacher') {
+            if (request()->sign_type === 'teacher') {
                 $teacher = Teacher::where('username', $username)->firstOrFail();
-                LineUser::where('teacher_id', $teacher->id)->firstOrFail();
-            }
-
-            if (request()->signup_type === 'student') {
+                $lineUser = LineUser::where('teacher_id', $teacher->id)->firstOrFail();
+                $lineUser->user = $teacher;
+            } elseif (request()->sign_type === 'student') {
                 $student = Student::where('username', $username)->firstOrFail();
-                LineUser::where('student_id', $student->id)->firstOrFail();
+                $lineUser = LineUser::where('student_id', $student->id)->firstOrFail();
+                $lineUser->user = $student;
             }
         } catch (Exception $e) {
-            return false;
+            return;
         }
 
-        return true;
+        return $lineUser;
+    }
+
+    public function makeSureOnlyOneTeacherCanBindLine($teacherID, $lineID)
+    {
+        $exist = LineUser::where('id', $lineID)->whereNotNull('teacher_id')->first();
+        if ($exist) {
+            if ($exist->teacher_id !== $teacherID) {
+                throw new Exception('一个Line 帐号只能绑定一个教师帐号, 绑定失败', Response::HTTP_CONFLICT);
+            }
+        }
     }
 
 }

@@ -21,15 +21,17 @@ Route::group([
     'middleware' => ['line-auth']
 ], function () {
     Route::get('line_users', 'LineUserController@index')->name('get_line_users_from_line_auth');
+    Route::post('bind_user', 'LineUserController@bindUser');
 });
 
-$StudentTeacherCommonRoutes = function ($tokenProvider) {
+$StudentTeacherCommonRoutes = function ($tokenProvider, $controllerName) {
     request()->merge(['token_provider' => $tokenProvider]);
     Route::get('/', function (Request $request) {
         return $request->user();
     });
     Route::get('line_users', 'LineUserController@index');
-    Route::post('bind_line', 'AuthController@bindLine')->middleware('line-auth');
+    Route::post('bind_line', $controllerName . '@bindLine')->middleware('line-auth');
+    Route::post('bind_user', $controllerName . '@bindUser');
 };
 
 
@@ -37,7 +39,7 @@ Route::group([
     'prefix' => 'student',
     'middleware' => ['auth:student']
 ], function () use ($StudentTeacherCommonRoutes) {
-    $StudentTeacherCommonRoutes('students');
+    $StudentTeacherCommonRoutes('students', 'StudentController');
 });
 
 
@@ -45,7 +47,7 @@ Route::group([
     'prefix' => 'teacher',
     'middleware' => ['auth:teacher']
 ], function () use ($StudentTeacherCommonRoutes) {
-    $StudentTeacherCommonRoutes('teachers');
+    $StudentTeacherCommonRoutes('teachers', 'TeacherController');
 });
 
 

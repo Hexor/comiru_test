@@ -22,6 +22,7 @@ class LineAuthorized
             if ($decoded->exp <= time()) {
                 throw new Exception("expired", 401);
             }
+            request()->merge(['line_id' => $decoded->sub]);
         } catch (\Exception $e) {
             return responseUnauthorized('Line 授权已经失效, 请重试');
         }

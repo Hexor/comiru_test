@@ -7,9 +7,38 @@ use App\Repositories\LineUserRepository;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 class LineUserController extends Controller
 {
+    public function bindUser(Request $request, LineUserRepository $lineUserRepository)
+    {
+        if ($request->is_signup) {
+            $exist = LineUser::where('id', $request->line_id)->whereNotNull('teacher_id')->first();
+            if ($exist) {
+                throw new Exception('一个Line 帐号只能绑定一个教师帐号, 注册失败', Response::HTTP_CONFLICT);
+            }
+            $proxy = Request::create('/api/auth/signup', 'POST', $request->all());
+        } else {
+            $proxy = Request::create('/api/auth/signin', 'POST', $request->all());
+        }
+
+        $response = app()->handle($proxy);
+        if (!$response->isOk()) {
+            return $response;
+        }
+
+        $target = $lineUserRepository->isUserBindLine($request->username);
+        if ($target) {
+            if ($target->id != $request->line_id) {
+                throw new Exception('该帐号已经绑定的 Line 帐号不属于你, 绑定新帐号失败');
+            }
+        }
+
+        $lineUserRepository->create($request->line_id, getTokenProvider($request), $target->user);
+
+        return responseSuccess();
+    }
     /**
      * Display a listing of the resource.
      *
