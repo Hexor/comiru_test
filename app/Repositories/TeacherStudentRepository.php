@@ -50,8 +50,8 @@ class TeacherStudentRepository
         $line = LineUser::where('teacher_id', $teacherID)->first();
         if ($line) {
             PushLineMessage::dispatch([
-                'to' => $line->id,
-                'message' => $message
+                'to' => $line->getOriginal()['id'],
+                'body' => $message
             ]);
         }
     }

@@ -46,7 +46,7 @@ class PushLineMessage implements ShouldQueue
             'body' => json_encode($formatMessage),
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Authorization' => 'Bearer ' + env('LINE_BOT_TOKEN')
+                'Authorization' => 'Bearer ' . env('LINE_BOT_TOKEN')
             ]
         ];
 
