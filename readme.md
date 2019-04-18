@@ -24,7 +24,7 @@
     Client Secret: bqSA45dzJYmzIuOBRwGfKZPAvbIzipJr2251vIVX
     ```
     保存这个 Client ID 为 2 的 Client Secret 字符串, 并写入 ```.env``` 文件的 
-    ```PASSPORT_CLIENT_SECRET``` 和 ```PASSPORT_CLIENT_ID``` 字段.   设置好之后, ```.env``` 将包含以下内 <br>
+    ```PASSPORT_CLIENT_SECRET``` 和 ```PASSPORT_CLIENT_ID``` 字段.   设置好之后, ```.env``` 将包含以下内容 <br>
     ```
     PASSPORT_CLIENT_SECRET=bqSA45dzJYmzIuOBRwGfKZPAvbIzipJr2251vIVX
     PASSPORT_CLIENT_ID=2
