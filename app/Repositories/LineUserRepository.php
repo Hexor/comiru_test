@@ -105,7 +105,7 @@ class LineUserRepository
             return;
         }
 
-        return $this->indexByLineID($result->id);
+        return $this->indexByLineID($result->getOriginal()['id']);
 
     }
 

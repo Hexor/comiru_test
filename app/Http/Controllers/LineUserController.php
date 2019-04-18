@@ -35,7 +35,7 @@ class LineUserController extends Controller
 
         $target = $lineUserRepository->isUserBindLine($request->username, $signType);
         if ($target) {
-            if ($target->id != $lineID) {
+            if ($target->getOriginal()['id'] != $lineID) {
                 throw new Exception('该帐号已经绑定的 Line 帐号不属于你, 绑定新帐号失败');
             }
         }

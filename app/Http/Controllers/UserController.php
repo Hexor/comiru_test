@@ -31,20 +31,20 @@ class UserController extends Controller
             return responseUnauthorized('当前帐号没有绑定过 Line, 绑定新帐号失败');
         }
 
-        $response = $this->verifyAuthInfoBeforeBind($request, $lineUser->id, $signType);
+        $response = $this->verifyAuthInfoBeforeBind($request, $lineUser->getOriginal()['id'], $signType);
         if (!$response->isOk()) {
             return $response;
         }
 
         $target = $lineUserRepository->isUserBindLine($request->username, $signType);
         if ($target) {
-            if ($target->id != $lineUser->id) {
+            if ($target->getOriginal()['id'] != $lineUser->getOriginal()['id']) {
                 throw new Exception('该帐号已经绑定的 Line 帐号不属于你, 绑定新帐号失败');
             }
         }
 
         $lineUserRepository->create(
-            $lineUser->id,
+            $lineUser->getOriginal()['id'],
             $tokenProvider,
             $userRepository->getUserByUsername($request->username, $signType)
         );

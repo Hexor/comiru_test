@@ -45,7 +45,7 @@ trait commonAuthTrait
             return responseUnauthorized();
         }
 
-        if ($targetLineUser->id !== $lineUser->id) {
+        if ($targetLineUser->getOriginal()['id'] !== $lineUser->getOriginal()['id']) {
             return responseUnauthorized();
         }
 
