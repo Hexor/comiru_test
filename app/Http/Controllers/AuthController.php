@@ -39,7 +39,7 @@ class AuthController extends Controller
                 'grant_type' => 'authorization_code',
                 'client_id' => env('LINE_CLIENT_ID'),
                 'client_secret' => env('LINE_CLIENT_SECRET'),
-                'redirect_uri' => env('APP_URL') . '/api/line_auth_callback',
+                'redirect_uri' => config('app.url'). '/api/line_auth_callback',
                 'code' => $request->code,
             ],
             'headers' => [
@@ -72,7 +72,7 @@ class AuthController extends Controller
         $accessToken = $encodedDataFromLineServer['id_token'];
         $expiresIn = $encodedDataFromLineServer['expires_in'];
 
-        return redirect(env('APP_URL') . "/#/auth/line?access_token={$accessToken}&expires_in={$expiresIn}");
+        return redirect(config('app.url') . "/#/auth/line?access_token={$accessToken}&expires_in={$expiresIn}");
 
         $decoded = JWT::decode($encodedDataFromLineServer['id_token'], env('LINE_CLIENT_SECRET'), ['HS256']);
 //   解密 id_token 后得到用户的 line信息
