@@ -4,17 +4,6 @@ use App\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('st', function (Request $request) {
-    $teacher = Teacher::find(1);
-
-    $token = $teacher->createToken('My Token');
-    return $token;
-//    $tokens = $teacher->tokens();
-//    foreach ($tokens as $token) {
-//        $token->revoke();
-//    }
-    return $teacher->tokens();
-});
 
 Route::get('teachers', 'TeacherController@index')->middleware('auth:student');
 Route::get('students', 'StudentController@index')->middleware('auth:teacher');
@@ -66,9 +55,26 @@ Route::group([
 });
 
 
-Route::get('push', 'AuthController@push');
 Route::any('line_auth_callback', 'AuthController@lineAuthCallback');
 //http://127.0.0.1/api/line_auth_callback?code=BGXbp6CUwV2ipygGz6UW&state=12345abcde
-
 //https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=1564192144&redirect_uri=http://127.0.0.1:8000/api/line_auth_callback&state=12345&scope=openid
+
+
+
+
+
+// 以下是测试用的路由
+Route::get('st', function (Request $request) {
+    $teacher = Teacher::find(1);
+
+    $token = $teacher->createToken('My Token');
+    return $token;
+//    $tokens = $teacher->tokens();
+//    foreach ($tokens as $token) {
+//        $token->revoke();
+//    }
+    return $teacher->tokens();
+});
+
+Route::get('push', 'AuthController@push');
 
