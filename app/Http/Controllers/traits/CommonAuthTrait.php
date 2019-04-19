@@ -3,13 +3,12 @@
 
 namespace App\Http\Controllers\traits;
 
-
-use App\LineUser;
 use Exception;
+use App\LineUser;
 use Illuminate\Support\Facades\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-trait commonAuthTrait
+trait CommonAuthTrait
 {
     /**
      * 当用户已经登录了一个帐号A, 想要绑定B帐号时, 首先验证B帐号的合法性

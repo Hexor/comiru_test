@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Student extends Authenticatable
 {
@@ -27,8 +26,8 @@ class Student extends Authenticatable
         return 'student';
     }
 
-    public function findForPassport($username) {
+    public function findForPassport($username)
+    {
         return $this->where('username', $username)->first();
     }
-
 }

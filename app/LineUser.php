@@ -9,8 +9,9 @@ class LineUser extends Model
     //
     protected $guarded = [];
 
-    public function teacher() {
-        return $this->hasOne(Teacher::class , 'id' , 'teacher_id');
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'id', 'teacher_id');
     }
 
     public function student()

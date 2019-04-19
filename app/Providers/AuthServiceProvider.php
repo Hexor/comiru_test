@@ -3,12 +3,9 @@
 namespace App\Providers;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Passport;
-use Laravel\Passport\RouteRegistrar;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -18,7 +15,6 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
     ];
 
     /**
@@ -39,6 +35,5 @@ class AuthServiceProvider extends ServiceProvider
                 return $router->forAccessTokens();
             });
         });
-
     }
 }

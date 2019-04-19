@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Teacher extends Authenticatable
 {
@@ -32,7 +31,8 @@ class Teacher extends Authenticatable
         return $this->where('username', $username)->first();
     }
 
-    public function followed() {
+    public function followed()
+    {
         return $this->hasMany(TeacherStudent::class)->where('student_id', request()->user()->id);
     }
 }

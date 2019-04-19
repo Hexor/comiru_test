@@ -4,7 +4,6 @@ use App\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('teachers', 'TeacherController@index')->middleware('auth:student');
 Route::get('students', 'StudentController@index')->middleware('auth:teacher');
 
@@ -73,8 +72,7 @@ Route::get('st', function (Request $request) {
 //    foreach ($tokens as $token) {
 //        $token->revoke();
 //    }
-    return $teacher->tokens();
+//    return $teacher->tokens();
 });
 
 Route::get('push', 'AuthController@push');
-

@@ -2,17 +2,21 @@
 
 namespace App\Repositories;
 
-
-use App\Exceptions\ApiException;
-use App\LineUser;
+use Exception;
 use App\Student;
 use App\Teacher;
-use Exception;
+use App\LineUser;
 use Symfony\Component\HttpFoundation\Response;
 
 class LineUserRepository
 {
-
+    /**
+     * @param $lineID
+     * @param $tokenProvider
+     * @param $user
+     * @return LineUser|mixed
+     * @throws Exception
+     */
     public function create($lineID, $tokenProvider, $user)
     {
         $lineUser = $this->isExistLineUser($lineID, $tokenProvider, $user);
@@ -39,33 +43,7 @@ class LineUserRepository
         } else {
             throwSaveFailedException('无法存储数据, 绑定失败');
         }
-    }
-
-
-    /**
-     * @param $lineID
-     * @param $tokenProvider
-     * @param $user
-     * @return mixed 如果存在, 则返回相应模型, 否则返回 null
-     * @throws Exception
-     */
-    private function isExistLineUser($lineID, $tokenProvider, $user)
-    {
-        $where = [
-            ['id', '=', $lineID],
-        ];
-
-        if ($tokenProvider === 'teachers') {
-            $exist = LineUser::where($where)->whereNotNull('teacher_id')->first();
-            if (!empty($exist) && $exist->teacher_id != $user->id) {
-                // 该帐号已经绑定了其他的教师帐号
-                throw new Exception("该 Line 用户已经绑定了其他教师帐号, 绑定失败", Response::HTTP_CONFLICT);
-            }
-            return $exist;
-        } elseif ($tokenProvider === 'students') {
-            $where[] = ['student_id', '=', $user->id];
-            return LineUser::where($where)->first();
-        }
+        return null;
     }
 
     public function indexByLineID($id)
@@ -102,11 +80,10 @@ class LineUserRepository
 
         $result = LineUser::where($queryColomn, $user->id)->first();
         if (!$result) {
-            return;
+            return null;
         }
 
         return $this->indexByLineID($result->getOriginal()['id']);
-
     }
 
     public function isUserBindLine($username, $signType)
@@ -122,13 +99,19 @@ class LineUserRepository
                 $lineUser = LineUser::where('student_id', $student->id)->firstOrFail();
                 $lineUser->user = $student;
             }
-        } catch (Exception $e) {;
-            return;
+        } catch (Exception $e) {
+            ;
+            return null;
         }
 
         return $lineUser;
     }
 
+    /**
+     * @param $teacherID
+     * @param $lineID
+     * @throws Exception
+     */
     public function makeSureOnlyOneTeacherCanBindLine($teacherID, $lineID)
     {
         $exist = LineUser::where('id', $lineID)->whereNotNull('teacher_id')->first();
@@ -149,4 +132,31 @@ class LineUserRepository
         return LineUser::where('id', $lineID)->first();
     }
 
+
+    /**
+     * @param $lineID
+     * @param $tokenProvider
+     * @param $user
+     * @return mixed 如果存在, 则返回相应模型, 否则返回 null
+     * @throws Exception
+     */
+    private function isExistLineUser($lineID, $tokenProvider, $user)
+    {
+        $where = [
+            ['id', '=', $lineID],
+        ];
+
+        if ($tokenProvider === 'teachers') {
+            $exist = LineUser::where($where)->whereNotNull('teacher_id')->first();
+            if (!empty($exist) && $exist->teacher_id != $user->id) {
+                // 该帐号已经绑定了其他的教师帐号
+                throw new Exception("该 Line 用户已经绑定了其他教师帐号, 绑定失败", Response::HTTP_CONFLICT);
+            }
+            return $exist;
+        } elseif ($tokenProvider === 'students') {
+            $where[] = ['student_id', '=', $user->id];
+            return LineUser::where($where)->first();
+        }
+        return null;
+    }
 }

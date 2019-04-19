@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\traits\commonAuthTrait;
-use App\Repositories\UserRepository;
-use Illuminate\Http\Request;
-use App\Repositories\LineUserRepository;
 use Exception;
 use Firebase\JWT\JWT;
+use Illuminate\Http\Request;
+use App\Repositories\UserRepository;
+use App\Repositories\LineUserRepository;
+use App\Http\Controllers\traits\CommonAuthTrait;
 
 class UserController extends Controller
 {
-    use commonAuthTrait;
+    use CommonAuthTrait;
 
     /**
      * 用户曾经绑定过 line, 但是没有持有 Line token, 并且希望绑定更多帐号时使用
@@ -63,7 +63,7 @@ class UserController extends Controller
         $tokenProvider = '';
         if ($request->user()->sign_type === 'teacher') {
             $tokenProvider = 'teachers';
-        } else if ($request->user()->sign_type === 'student') {
+        } elseif ($request->user()->sign_type === 'student') {
             $tokenProvider = 'students';
         }
 
@@ -78,5 +78,4 @@ class UserController extends Controller
         $lineUser = $lineUserRepository->findByUser($request->user());
         return $this->commonSwitchUser($request, $lineUserRepository, $userRepository, $lineUser);
     }
-
 }

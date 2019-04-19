@@ -2,24 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\LineUser;
-use App\Repositories\LineUserRepository;
+use Exception;
 use App\Student;
 use App\Teacher;
-use App\User;
-use Exception;
-use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use App\Repositories\LineUserRepository;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
-
-
     public function push()
     {
-
     }
 
     /**
@@ -27,7 +21,7 @@ class AuthController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|string
      */
-    public function lineAuthCallback(Request $request, LineUserRepository $lineUserRepository)
+    public function lineAuthCallback(Request $request)
     {
         if ($request->state != '12345') {
             return 'error 1';
@@ -58,13 +52,13 @@ class AuthController extends Controller
         $jwt = $http->post('https://api.line.me/oauth2/v2.1/token', $postContent);
 
 
-// line 返回的加密后的用户信息
-//  "access_token" => "eyJhb......"
-//  "token_type" => "Bearer"
-//  "refresh_token" => "GR87P4JaLfKqJcXSMgID...."
-//  "expires_in" => 2592000
-//  "scope" => "openid"
-//  "id_token" => "eyJ0eXAiOiJKcyCI"
+        // line 返回的加密后的用户信息
+        //  "access_token" => "eyJhb......"
+        //  "token_type" => "Bearer"
+        //  "refresh_token" => "GR87P4JaLfKqJcXSMgID...."
+        //  "expires_in" => 2592000
+        //  "scope" => "openid"
+        //  "id_token" => "eyJ0eXAiOiJKcyCI"
 
         $encodedDataFromLineServer = json_decode($jwt->getBody()->getContents(), true);
 //        dd($encodedDataFromLineServer);
@@ -74,15 +68,14 @@ class AuthController extends Controller
 
         return redirect(config('app.url') . "/#/auth/line?access_token={$accessToken}&expires_in={$expiresIn}");
 
-        $decoded = JWT::decode($encodedDataFromLineServer['id_token'], env('LINE_CLIENT_SECRET'), ['HS256']);
-//   解密 id_token 后得到用户的 line信息
+//        $decoded = JWT::decode($encodedDataFromLineServer['id_token'], env('LINE_CLIENT_SECRET'), ['HS256']);
+        //   解密 id_token 后得到用户的 line信息
 //    +"iss": "https://access.line.me"  make sure
 //    +"sub": "U57f93ee27d38ec9077cedb50059ef4c2" User ID for which the ID token is generated
 //    +"aud": "1564192144" make sure it is your channel id
 //    +"exp": 1555057940 make sure current time is not larger than exp (1小时过期)
 //    +"iat": 1555054340 Time when the ID token was generated in UNIX time.
-        // TODO 创建一条记录在 Line_user 表里
-        dd($decoded);
+//        dd($decoded);
     }
 
     /**
@@ -132,7 +125,6 @@ class AuthController extends Controller
             );
         }
         return $response;
-
     }
 
     /**

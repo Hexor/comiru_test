@@ -3,13 +3,13 @@
 namespace App;
 
 use DateInterval;
-use Laravel\Passport\Bridge\PersonalAccessGrant;
 use Laravel\Passport\Token;
 use Illuminate\Container\Container;
+use League\OAuth2\Server\AuthorizationServer;
 use Laravel\Passport\PersonalAccessTokenResult;
+use Laravel\Passport\Bridge\PersonalAccessGrant;
 use Laravel\Passport\PersonalAccessTokenFactory;
 use Laravel\Passport\HasApiTokens as BaseHasApiTokens;
-use League\OAuth2\Server\AuthorizationServer;
 use SMartins\PassportMultiauth\Config\AuthConfigHelper;
 use SMartins\PassportMultiauth\Exceptions\MissingConfigException;
 
@@ -27,7 +27,9 @@ trait HasMultiAuthApiTokens
         return $this->hasMany(Token::class, 'user_id')
             ->join('oauth_access_token_providers', function ($join) {
                 $join->on(
-                    'oauth_access_tokens.id', '=', 'oauth_access_token_id'
+                    'oauth_access_tokens.id',
+                    '=',
+                    'oauth_access_token_id'
                 )->where('oauth_access_token_providers.provider', '=', AuthConfigHelper::getUserProvider($this));
             })->orderBy('created_at', 'desc')
             ->select('oauth_access_tokens.*')
@@ -54,7 +56,9 @@ trait HasMultiAuthApiTokens
         app()->get(AuthorizationServer::class)->enableGrantType(new PersonalAccessGrant(), new DateInterval('PT'.env('TOKEN_EXPIRE_SECONDS').'S'));
 
         $token = Container::getInstance()->make(PersonalAccessTokenFactory::class)->make(
-            $this->getKey(), $name, $scopes
+            $this->getKey(),
+            $name,
+            $scopes
         );
 
         // Reset config to defaults

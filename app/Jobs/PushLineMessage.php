@@ -51,6 +51,5 @@ class PushLineMessage implements ShouldQueue
         ];
 
         $http->post('https://api.line.me/v2/bot/message/multicast', $postContent);
-
     }
 }

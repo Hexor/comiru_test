@@ -2,15 +2,10 @@
 
 namespace App\Repositories;
 
-
-use App\Exceptions\ApiException;
-use App\Jobs\PushLineMessage;
-use App\LineUser;
-use App\Student;
 use App\Teacher;
+use App\LineUser;
 use App\TeacherStudent;
-use Exception;
-use Symfony\Component\HttpFoundation\Response;
+use App\Jobs\PushLineMessage;
 
 class TeacherStudentRepository
 {
@@ -23,6 +18,12 @@ class TeacherStudentRepository
         }
     }
 
+    /**
+     * @param $teacher_id
+     * @param $student
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function switchFollowStatus($teacher_id, $student)
     {
         $followed = TeacherStudent::where('teacher_id', $teacher_id)->where('student_id', $student->id)->first();
@@ -43,6 +44,7 @@ class TeacherStudentRepository
             }
         }
         throwSaveFailedException('关注操作失败');
+        return null;
     }
 
     public function pushFollowNotification($teacherID, $message)
@@ -55,5 +57,4 @@ class TeacherStudentRepository
             ]);
         }
     }
-
 }

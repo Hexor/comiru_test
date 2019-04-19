@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Validation\Factory;
 use Illuminate\Validation\Validator;
+use Illuminate\Contracts\Validation\Factory;
 use Symfony\Component\HttpFoundation\Response;
 
 if (!function_exists('inputAll')) {
@@ -15,7 +15,6 @@ if (!function_exists('inputAll')) {
 }
 
 if (!function_exists('requestOnly')) {
-
     function requestOnly($array)
     {
         $result = [];
@@ -109,13 +108,22 @@ if (!function_exists('responseUnprocessable')) {
 }
 
 if (!function_exists('throwSaveFailedException')) {
+    /**
+     * @param $message
+     * @throws Exception
+     */
     function throwSaveFailedException($message)
     {
         throw new Exception($message, Response::HTTP_INSUFFICIENT_STORAGE);
     }
 }
 if (!function_exists('responseError')) {
-    function responseError($errors = 'Error', $code = 200, $data = '')
+    /**
+     * @param string $errors
+     * @param int $code
+     * @return \Illuminate\Http\JsonResponse
+     */
+    function responseError($errors = 'Error', $code = 200)
     {
         return response()->json([
             'message' => $errors,
@@ -141,7 +149,6 @@ if (!function_exists('getTokenProvider')) {
         }
 
         return $tokenProvider;
-
     }
 }
 if (!function_exists('is_int_type')) {
