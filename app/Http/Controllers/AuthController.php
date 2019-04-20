@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Admin;
 use Exception;
 use App\Student;
 use App\Teacher;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Repositories\LineUserRepository;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -180,6 +182,70 @@ class AuthController extends Controller
         return app()->handle($proxy);
     }
 
+    /**
+     * 管理员使用帐号密码登录
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|Response
+     * @throws Exception
+     */
+    public function adminSignin(Request $request)
+    {
+        $this->validate($request, [
+            'username' => 'required|max:10',
+            'password' => 'required|min:6|max:20'
+        ]);
+
+        $credentials = request(['username', 'password']);
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+        $admin = $request->user();
+        $token = generateAdminAccessToken();
+        $admin->remember_token = $token;
+        $saved = $admin->save();
+        if (!$saved) {
+            throwSaveFailedException();
+        }
+
+        return responseSuccess([
+            'access_token' => $token,
+            'expires_in' => env('ADMIN_TOKEN_EXPIRE_SECONDS'),
+        ]);
+    }
+
+    /**
+     * 管理员用户使用帐号密码注册
+     * @param Request $request
+     * @return Response
+     * @throws Exception
+     */
+    public function adminSignup(Request $request)
+    {
+        $this->validate($request, [
+            'username' => 'required|max:10',
+            'password' => 'required|min:6|max:20',
+        ]);
+        $this->validate($request, [
+            'username' => 'unique:admins',
+        ]);
+
+        $adminInfo = [
+            'username' => $request->username,
+            'password' => bcrypt($request->password),
+        ];
+
+        $admin = new Admin($adminInfo);
+
+        $saved = $admin->save();
+        if (!$saved) {
+            throwSaveFailedException('无法存储数据, 注册失败');
+        }
+
+        return $admin;
+    }
     /**
      * Logout user (Revoke the token)
      *

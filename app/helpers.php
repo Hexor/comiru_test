@@ -112,7 +112,7 @@ if (!function_exists('throwSaveFailedException')) {
      * @param $message
      * @throws Exception
      */
-    function throwSaveFailedException($message)
+    function throwSaveFailedException($message = '操作失败, 数据存储出现问题')
     {
         throw new Exception($message, Response::HTTP_INSUFFICIENT_STORAGE);
     }
@@ -172,5 +172,19 @@ if (!function_exists('randomkeys')) {
         }
 
         return $key;
+    }
+}
+
+if (!function_exists('getAdminAccessTokenJWTKey')) {
+    function getAdminAccessTokenJWTKey()
+    {
+        $appKey = env('APP_KEY');
+    }
+}
+
+if (!function_exists('generateAdminAccessToken')) {
+    function generateAdminAccessToken()
+    {
+        return str_random(env('ADMIN_TOKEN_STR_LENGTH')) . strval(time());
     }
 }

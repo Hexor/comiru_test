@@ -53,13 +53,22 @@ Route::group([
     Route::post('signin', 'AuthController@signin');
 });
 
+Route::group([
+    'prefix' => 'admin'
+], function () {
+    Route::post('signin', 'AuthController@adminSignin');
+    Route::post('signup', 'AuthController@adminSignup');
+
+    Route::group([
+        'middleware' => ['admin-auth']
+    ], function () {
+        Route::get('me', 'AdminController@me');
+    });
+});
 
 Route::any('line_auth_callback', 'AuthController@lineAuthCallback');
 //http://127.0.0.1/api/line_auth_callback?code=BGXbp6CUwV2ipygGz6UW&state=12345abcde
 //https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=1564192144&redirect_uri=http://127.0.0.1:8000/api/line_auth_callback&state=12345&scope=openid
-
-
-
 
 
 // 以下是测试用的路由

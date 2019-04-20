@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\LineAuthorized;
+use App\Http\Middleware\AdminAuthorized;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -56,6 +57,7 @@ class Kernel extends HttpKernel
 //        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
         'auth' => \SMartins\PassportMultiauth\Http\Middleware\MultiAuthenticate::class,
         'line-auth' => LineAuthorized::class,
+        'admin-auth' => AdminAuthorized::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
