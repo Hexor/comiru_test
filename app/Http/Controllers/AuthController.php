@@ -122,9 +122,6 @@ class AuthController extends Controller
             $responseArray['line_exist_in_server'] = 'line_exist_in_server';
             $response->setContent(
                 json_encode($responseArray)
-
-
-
             );
         }
 
