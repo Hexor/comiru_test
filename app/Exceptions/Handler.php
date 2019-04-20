@@ -3,6 +3,8 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -50,9 +52,22 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof ApiException) {
             return responseError($exception->getMessage(), $exception->getCode());
+        } elseif ($exception instanceof ValidationException) {
+            return responseError($this->getErrorsAsString($exception->errors()), Response::HTTP_BAD_REQUEST);
         } elseif ($exception->getCode() >= 400 && $exception->getCode() < 500) {
             return responseError($exception->getMessage(), $exception->getCode());
         }
         return parent::render($request, $exception);
+    }
+
+    private function getErrorsAsString(array $errors)
+    {
+        $result = '';
+        foreach ($errors as $error) {
+            foreach ($error as $detail) {
+                $result .= $detail . " ";
+            }
+        }
+        return $result;
     }
 }
