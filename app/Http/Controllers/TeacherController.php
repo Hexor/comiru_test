@@ -14,9 +14,14 @@ class TeacherController extends UserController
      * @param TeacherRepository $teacherRepository
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, TeacherRepository $teacherRepository)
+    public function relatedIndex(Request $request, TeacherRepository $teacherRepository)
     {
         $result = $teacherRepository->index($request->user()->id);
         return responseSuccess($result);
+    }
+
+    public function adminIndex(Request $request, TeacherRepository $teacherRepository)
+    {
+        return $teacherRepository->index();
     }
 }

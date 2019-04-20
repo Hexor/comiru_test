@@ -13,4 +13,10 @@ class TeacherStudent extends Model
     {
         return $this->hasOne(Student::class, 'id', 'student_id');
     }
+
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'id', 'teacher_id');
+    }
+
 }

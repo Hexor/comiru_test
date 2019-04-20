@@ -57,4 +57,9 @@ class TeacherStudentRepository
             ]);
         }
     }
+
+    public function index()
+    {
+        return TeacherStudent::with('student')->get();
+    }
 }

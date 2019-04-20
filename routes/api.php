@@ -4,8 +4,8 @@ use App\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('teachers', 'TeacherController@index')->middleware('auth:student');
-Route::get('students', 'StudentController@index')->middleware('auth:teacher');
+Route::get('teachers', 'TeacherController@relatedIndex')->middleware('auth:student');
+Route::get('students', 'StudentController@relatedIndex')->middleware('auth:teacher');
 
 Route::group([
     'prefix' => 'line',
@@ -42,7 +42,6 @@ Route::group([
     'middleware' => ['auth:teacher']
 ], function () use ($StudentTeacherCommonRoutes) {
     $StudentTeacherCommonRoutes('teachers', 'TeacherController');
-    Route::get('fav_students', 'StudentController@favIndex');
 });
 
 
@@ -63,6 +62,17 @@ Route::group([
         'middleware' => ['admin-auth']
     ], function () {
         Route::get('me', 'AdminController@me');
+
+        Route::get('students', 'StudentController@adminIndex');
+        Route::delete('students', 'StudentController@delete');
+        Route::patch('students/{id}', 'StudentController@update');
+
+        Route::get('teachers', 'TeacherController@adminIndex');
+
+        Route::get('teacher_students', 'TeacherStudentController@adminIndex');
+
+        Route::get('line_users', 'LineUserController@adminIndex');
+        Route::delete('line_users', 'LineUserController@adminIndex');
     });
 });
 

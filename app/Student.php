@@ -2,26 +2,27 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Student extends Authenticatable
 {
-    use HasMultiAuthApiTokens, Notifiable;
+    use SoftDeletes, HasMultiAuthApiTokens, Notifiable;
 
     protected $guarded = [];
 
     protected $hidden = [
         'password', 'remember_token',
     ];
-    protected $appends = ['type_desc', 'sign_type'];
+    protected $appends = ['type_desc', 'sign_ype'];
 
     public function getTypeDescAttribute()
     {
         return '学员';
     }
 
-    public function getSignTypeAttribute()
+    public function getSignypeAttribute()
     {
         return 'student';
     }
