@@ -199,7 +199,8 @@ class AuthController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => '帐号密码错误',
+                'redirect_path' => '/admin/login'
             ], 401);
         }
         $admin = $request->user();
