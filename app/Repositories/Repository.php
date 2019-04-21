@@ -19,7 +19,7 @@ class Repository
         // sort 比如可以传 'id|desc'
         // 即代表 以 id 这一列进行 desc 方式的排序
         $data = requestOnly([
-            'keyword', 'sort', 'page_size', 'exact_columns',
+            'keyword', 'sort', 'page_size', 'exact_columns', 'where_in'
         ]);
 
         list($filter, $order, $pageSize, $exactColumns) = array_values($data);

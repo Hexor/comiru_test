@@ -2,12 +2,13 @@
 
 namespace App\Repositories;
 
+use App\Student;
 use App\Teacher;
 use App\LineUser;
 use App\TeacherStudent;
 use App\Jobs\PushLineMessage;
 
-class TeacherStudentRepository
+class TeacherStudentRepository extends Repository
 {
     public function create($studentID = null)
     {
@@ -60,6 +61,43 @@ class TeacherStudentRepository
 
     public function index()
     {
-        return TeacherStudent::with('student')->get();
+        $keyword = request()->get('keyword');
+        $relateTeacherIDs = Teacher::where('username', 'like', "%{$keyword}%")->pluck('id')->toArray();
+        $relateStudentIDs = Student::where('username', 'like', "%{$keyword}%")->pluck('id')->toArray();
+
+        $data = $this->getSearchAbleData(
+            TeacherStudent::class,
+            [],
+            function ($builder) use ($relateStudentIDs, $relateTeacherIDs) {
+                if (!empty($relateStudentIDs)) {
+                    $builder->orWhereIn('student_id', $relateStudentIDs);
+                }
+                if (!empty($relateTeacherIDs)) {
+                    $builder->orWhereIn('teacher_id', $relateTeacherIDs);
+                }
+                $builder->with('student')->with('teacher');
+            },
+            function ($buses) {
+//                foreach ($buses as $bus) {
+//                }
+            }
+        );
+
+
+        return $data;
+    }
+
+    public function delete($id)
+    {
+        try {
+            $deletedRows = TeacherStudent::where('id', $id)->delete();
+            if (1 !== $deletedRows) {
+                throw new \Exception();
+            }
+        } catch (\Exception $e) {
+            return responseError('删除失败', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return responseSuccess();
     }
 }

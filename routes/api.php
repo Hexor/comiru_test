@@ -64,15 +64,19 @@ Route::group([
         Route::get('me', 'AdminController@me');
 
         Route::get('students', 'StudentController@adminIndex');
-        Route::delete('students', 'StudentController@delete');
+        Route::delete('students/{id}', 'StudentController@delete');
         Route::patch('students/{id}', 'StudentController@update');
 
         Route::get('teachers', 'TeacherController@adminIndex');
+        Route::delete('teachers/{id}', 'TeacherController@delete');
+        Route::post('teachers', 'TeacherController@store');
 
         Route::get('teacher_students', 'TeacherStudentController@adminIndex');
+        Route::delete('teacher_students/{id}', 'TeacherStudentController@delete');
 
         Route::get('line_users', 'LineUserController@adminIndex');
-        Route::delete('line_users', 'LineUserController@adminIndex');
+        Route::delete('line_users/teacher/{id}', 'LineUserController@deleteTeacher');
+        Route::delete('line_users/student/{id}', 'LineUserController@deleteStudent');
     });
 });
 

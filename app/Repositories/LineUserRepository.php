@@ -8,7 +8,7 @@ use App\Teacher;
 use App\LineUser;
 use Symfony\Component\HttpFoundation\Response;
 
-class LineUserRepository
+class LineUserRepository extends Repository
 {
     /**
      * @param $lineID
@@ -132,6 +132,45 @@ class LineUserRepository
         return LineUser::where('id', $lineID)->first();
     }
 
+    public function all()
+    {
+        $keyword = request()->get('keyword');
+        $relateTeacherIDs = Teacher::where('username', 'like', "%{$keyword}%")->pluck('id')->toArray();
+        $relateStudentIDs = Student::where('username', 'like', "%{$keyword}%")->pluck('id')->toArray();
+
+        $data = $this->getSearchAbleData(
+            LineUser::class,
+            ['id'],
+            function ($builder) use ($relateStudentIDs, $relateTeacherIDs) {
+                if (!empty($relateStudentIDs)) {
+                    $builder->orWhereIn('student_id', $relateStudentIDs);
+                }
+                if (!empty($relateTeacherIDs)) {
+                    $builder->orWhereIn('teacher_id', $relateTeacherIDs);
+                }
+                $builder->with('student')->with('teacher');
+            },
+            function ($items) {
+                foreach ($items as $item) {
+                    $item->username = $this->getUsernameDesc($item);
+                }
+            }
+        );
+
+
+        return $data;
+    }
+
+    public function getUsernameDesc($lineUser)
+    {
+        if (!empty($lineUser->student)) {
+            return '[学员] ' . $lineUser->student->username;
+        }
+        if (!empty($lineUser->teacher)) {
+            return '[教师] ' . $lineUser->teacher->username;
+        }
+    }
+
 
     /**
      * @param $lineID
@@ -158,5 +197,19 @@ class LineUserRepository
             return LineUser::where($where)->first();
         }
         return null;
+    }
+
+    public function delete($userID, $column)
+    {
+        try {
+            $deletedRows = LineUser::where($column, $userID)->delete();
+            if (1 !== $deletedRows) {
+                throw new \Exception();
+            }
+        } catch (\Exception $e) {
+            return responseError('删除失败', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return responseSuccess();
     }
 }

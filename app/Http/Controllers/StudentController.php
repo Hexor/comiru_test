@@ -25,12 +25,13 @@ class StudentController extends UserController
         return $studentRepository->index();
     }
 
-    public function delete(Request $request, StudentRepository $studentRepository)
+    public function delete(Request $request, StudentRepository $studentRepository, $id)
     {
+        request()->merge(['id' => $id]);
         $this->validate($request, [
             'id' => 'required|exists:students,id',
         ]);
-        return $studentRepository->delete($request->id);
+        return $studentRepository->delete($id);
     }
 
     public function update(Request $request, StudentRepository $studentRepository, $id)
@@ -40,11 +41,18 @@ class StudentController extends UserController
         $this->validate($request, [
             'id' => 'required|exists:students,id',
             'nickname' => 'sometimes|required|max:20',
+            'username' => 'sometimes|required|max:10',
             'desc' => 'sometimes|required|max:50',
         ]);
+        $this->validate($request, [
+            'username' => 'unique:students',
+        ]);
+        $this->validate($request, [
+            'username' => 'unique:teachers',
+        ]);
 
-
-        return $studentRepository->update($id, $request->only('nickname', 'desc'));
+//        return $request->all();
+        return $studentRepository->update($id, $request->only(['nickname', 'username', 'desc']));
     }
 
 }

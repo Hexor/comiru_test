@@ -69,4 +69,26 @@ class LineUserController extends Controller
 
         return responseSuccess($result);
     }
+
+    public function adminIndex(Request $request, LineUserRepository $lineUserRepository)
+    {
+        return $lineUserRepository->all();
+    }
+
+    public function deleteStudent(Request $request, LineUserRepository $lineUserRepository, $id)
+    {
+        request()->merge(['id' => $id]);
+        $this->validate($request, [
+            'id' => 'required|exists:line_users,student_id',
+        ]);
+        return $lineUserRepository->delete($id, 'student_id');
+    }
+    public function deleteTeacher(Request $request, LineUserRepository $lineUserRepository, $id)
+    {
+        request()->merge(['id' => $id]);
+        $this->validate($request, [
+            'id' => 'required|exists:line_users,teacher_id',
+        ]);
+        return $lineUserRepository->delete($id, 'teacher_id');
+    }
 }

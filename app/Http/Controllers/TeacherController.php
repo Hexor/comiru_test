@@ -24,4 +24,20 @@ class TeacherController extends UserController
     {
         return $teacherRepository->index();
     }
+
+    public function store(Request $request, TeacherRepository $teacherRepository)
+    {
+        request()->merge(['sign_type' => 'teacher']);
+        $proxy = Request::create('/api/auth/signup', 'POST', $request->all());
+        return app()->handle($proxy);
+    }
+
+    public function delete(Request $request, TeacherRepository $teacherRepository, $id)
+    {
+        request()->merge(['id' => $id]);
+        $this->validate($request, [
+            'id' => 'required|exists:teachers,id',
+        ]);
+        return $teacherRepository->delete($id);
+    }
 }

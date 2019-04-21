@@ -15,14 +15,14 @@ class Student extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-    protected $appends = ['type_desc', 'sign_ype'];
+    protected $appends = ['type_desc', 'sign_type'];
 
     public function getTypeDescAttribute()
     {
         return '学员';
     }
 
-    public function getSignypeAttribute()
+    public function getSignTypeAttribute()
     {
         return 'student';
     }

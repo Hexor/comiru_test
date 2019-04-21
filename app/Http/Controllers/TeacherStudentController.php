@@ -11,8 +11,19 @@ class TeacherStudentController extends Controller
     {
         return $teacherStudentRepository->index();
     }
+
     public function handleFollow(Request $request, TeacherStudentRepository $teacherStudentRepository)
     {
         return $teacherStudentRepository->switchFollowStatus($request->teacher_id, $request->user());
     }
+
+    public function delete(Request $request, TeacherStudentRepository $teacherStudentRepository, $id)
+    {
+        request()->merge(['id' => $id]);
+        $this->validate($request, [
+            'id' => 'required|exists:teacher_students,id',
+        ]);
+        return $teacherStudentRepository->delete($id);
+    }
+
 }
