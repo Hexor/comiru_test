@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\LineUser;
 use App\Teacher;
+use App\LineUser;
 use App\TeacherStudent;
 use Illuminate\Support\Facades\DB;
 

@@ -171,6 +171,20 @@ class LineUserRepository extends Repository
         }
     }
 
+    public function delete($userID, $column)
+    {
+        try {
+            $deletedRows = LineUser::where($column, $userID)->delete();
+            if (1 !== $deletedRows) {
+                throw new \Exception();
+            }
+        } catch (\Exception $e) {
+            return responseError('删除失败', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return responseSuccess();
+    }
+
 
     /**
      * @param $lineID
@@ -197,19 +211,5 @@ class LineUserRepository extends Repository
             return LineUser::where($where)->first();
         }
         return null;
-    }
-
-    public function delete($userID, $column)
-    {
-        try {
-            $deletedRows = LineUser::where($column, $userID)->delete();
-            if (1 !== $deletedRows) {
-                throw new \Exception();
-            }
-        } catch (\Exception $e) {
-            return responseError('删除失败', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        return responseSuccess();
     }
 }

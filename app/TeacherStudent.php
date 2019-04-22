@@ -18,5 +18,4 @@ class TeacherStudent extends Model
     {
         return $this->hasOne(Teacher::class, 'id', 'teacher_id');
     }
-
 }

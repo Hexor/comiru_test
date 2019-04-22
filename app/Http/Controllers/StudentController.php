@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Student;
 use Illuminate\Http\Request;
 use App\Repositories\StudentRepository;
 
@@ -36,7 +35,6 @@ class StudentController extends UserController
 
     public function update(Request $request, StudentRepository $studentRepository, $id)
     {
-
         request()->merge(['id' => $id]);
         $this->validate($request, [
             'id' => 'required|exists:students,id',
@@ -54,5 +52,4 @@ class StudentController extends UserController
 //        return $request->all();
         return $studentRepository->update($id, $request->only(['nickname', 'username', 'desc']));
     }
-
 }

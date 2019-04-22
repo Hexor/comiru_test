@@ -25,5 +25,4 @@ class TeacherStudentController extends Controller
         ]);
         return $teacherStudentRepository->delete($id);
     }
-
 }
