@@ -8,8 +8,8 @@ use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Route;
 use App\Repositories\LineUserRepository;
-use App\Http\Controllers\traits\CommonAuthTrait;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Controllers\traits\CommonAuthTrait;
 
 class LineUserController extends Controller
 {
