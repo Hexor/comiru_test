@@ -123,11 +123,15 @@ if (!function_exists('responseError')) {
      * @param int $code
      * @return \Illuminate\Http\JsonResponse
      */
-    function responseError($errors = 'Error', $code = 200)
+    function responseError($errors = 'Error', $code = 200, $redirectPath = null)
     {
-        return response()->json([
+        $data = [
             'message' => $errors,
-        ], $code);
+        ];
+        if (!empty($redirectPath)) {
+            $data['redirect_path'] = $redirectPath;
+        }
+        return response()->json($data, $code);
     }
 }
 

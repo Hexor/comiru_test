@@ -9,6 +9,7 @@ use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Route;
 use App\Repositories\LineUserRepository;
 use App\Http\Controllers\traits\CommonAuthTrait;
+use Symfony\Component\HttpFoundation\Response;
 
 class LineUserController extends Controller
 {
@@ -65,6 +66,9 @@ class LineUserController extends Controller
             $result = $lineUserRepository->indexByLineID($decoded->sub);
         } else {
             $result = $lineUserRepository->index();
+            if (empty($result)) {
+                return responseError('Line 授权已经失效, 请重新登录或绑定', Response::HTTP_UNAUTHORIZED, '/auth/login');
+            }
         }
 
         return responseSuccess($result);
@@ -83,6 +87,7 @@ class LineUserController extends Controller
         ]);
         return $lineUserRepository->delete($id, 'student_id');
     }
+
     public function deleteTeacher(Request $request, LineUserRepository $lineUserRepository, $id)
     {
         request()->merge(['id' => $id]);

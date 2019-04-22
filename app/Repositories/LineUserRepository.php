@@ -100,7 +100,6 @@ class LineUserRepository extends Repository
                 $lineUser->user = $student;
             }
         } catch (Exception $e) {
-            ;
             return null;
         }
 
