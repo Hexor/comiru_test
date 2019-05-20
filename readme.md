@@ -1,6 +1,6 @@
 项目代码已经通过 `PSR2` 代码格式校验, 校验规则如下
 
-`--rules='{"@PSR2": true, "ordered_imports": {"importsOrder": null, "sortAlgorithm": "length"}, "ordered_class_elements": true, "no_unused_imports": true, "array_syntax": {"syntax": "short"}}`
+`--rules='{"@PSR2": true, "ordered_imports": {"importsOrder": null, "sortAlgorithm": "length"}, "ordered_class_elements": true, "no_unused_imports": true, "array_syntax": {"syntax": "short"}}'`
 
 
 ### 后端简易部署指南
